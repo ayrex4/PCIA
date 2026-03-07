@@ -1,0 +1,19 @@
+# Ignore the virtual environment
+venv/
+draft/
+__pycache__/
+*.pyc
+
+# Ignore logs and images
+*.log
+*.png
+*.jpg
+*.txt
+*.
+.env
+# Ignore system files
+.DS_Store
+PCIA-assistant.url
+# ⚠️ CRITICAL: Ignore files with secrets if you hardcoded keys
+# Ideally, we move keys to a .env file later.
+# For now, just be careful not to commit main.py if it has your key!
