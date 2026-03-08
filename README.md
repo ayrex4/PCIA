@@ -116,7 +116,7 @@ Add a **hands-free voice interface** to trigger task chains through speech.
 
 Developed and maintained by:
 
-**GitHub:** @aymane4
-**Social Media:** @ayrex4 (AKA @aymane4)
+**GitHub:** @ayrex4
+**Social Media:** @ayrex4
 
 PCIA is built on the philosophy that a **modular, decision-driven agent can outperform traditional automation by combining deterministic logic with LLM-based reasoning.**
