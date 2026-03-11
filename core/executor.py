@@ -65,7 +65,7 @@ class Executor:
         pyautogui.moveTo(x, y, duration=0.3)
         pyautogui.click()
 
-    def wait_for_ui_to_settle(self, timeout=10, threshold=500):
+    def wait_for_ui_to_settle(self, timeout=10, threshold=5000):
         logger.info("Waiting for UI to settle (Visual Wait)...")
         start_time = time.time()
         

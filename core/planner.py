@@ -1,4 +1,6 @@
 import json
+import cv2
+import PIL.Image
 from google import genai
 from utils.logger import get_logger
 
@@ -7,72 +9,94 @@ logger = get_logger("TaskPlanner")
 class TaskPlanner:
     def __init__(self, api_key):
         self.client = genai.Client(api_key=api_key)
-        self.model_name = 'gemini-flash-lite-latest' 
+        self.model_name = 'gemini-3.1-flash-lite-preview' 
 
-    def generate_plan(self, user_prompt):
-        logger.info(f"Asking Gemini to plan task: '{user_prompt}'")
+    def _parse_json_response(self, response_text):
+        raw_text = response_text.strip()
+        if raw_text.startswith("```json"): raw_text = raw_text[7:-3].strip()
+        elif raw_text.startswith("```"): raw_text = raw_text[3:-3].strip()
+        try:
+            return json.loads(raw_text)
+        except Exception:
+            return {}
+
+    def generate_plan(self, user_prompt, system_context, learning_history):
+        logger.info(f"Asking Gemini to plan task: {user_prompt}")
         
-        system_instructions = """
-        You are the Brain of PCIA, an AI desktop automation agent.
-        Your job is to translate user requests into a strict JSON array of tasks.
+        system_instructions = f"""
+        You are the System Architect of PCIA. Output ONLY valid JSON.
         
-        AVAILABLE ACTIONS (intents):
-        1. Click text: {"intent": "Click [Name]", "target_type": "text", "target_value": "Exact Text on Screen"}
-        2. Click icon: {"intent": "Click [Name]", "target_type": "icon", "target_value": "image_name.png"}
-        3. Type text: {"intent": "type", "target_value": "text", "press_enter": false/true}
-        4. Press key: {"intent": "press_key", "target_value": "enter/down/up/space/esc/win/tab"}
-        5. Hotkey: {"intent": "hotkey", "target_value":["ctrl", "f"]}
-        6. Smart Wait: {"intent": "wait_for_ui", "target_value": 10}  # Use this AFTER opening apps or loading pages.
-        7. Extract: {"intent": "extract", "target_value": "Question"}
-        8. Click Vision: {"intent": "click_vision", "target_type": "vision", "target_value": "Description of element (e.g. 'Green Play Button', 'Search Bar')"}
+        CURRENT ENVIRONMENT: {system_context}
+        PAST MISTAKES (Do not repeat these): {learning_history}
         
-        🔥🔥 IMPROVISATION & KNOWLEDGE RULES:
-        1. Open apps using Windows Search (Win -> Type -> Enter).
-        2. If you know a reliable hotkey (like Ctrl+A), use it via {"intent": "hotkey"}.
-        3. IF YOU DO NOT KNOW A SHORTCUT, simply click the element using "click_vision".
-           Example: {"intent": "click_vision", "target_type": "vision", "target_value": "The search bar at the top"}
-        4. DO NOT assume specific image filenames exist. Use "click_vision" instead of "click_icon".
-
-        CRITICAL OS RULES:
-        1. When opening an app or a webpage, ALWAYS use "wait_for_ui" (value 10) immediately after. Do not guess sleep times.
-        2. To play a song in Spotify:
-           - Open Spotify -> wait_for_ui
-           - Hotkey ["ctrl", "k"] -> Type Song Name -> Enter
-           - wait_for_ui (wait for search results)
-           - Click icon: "spotify_play.png" (The green play button)        3. To scroll, use "press_key" -> "pagedown".
-
-        EXAMPLE (User: "Play Phonk on Spotify"):
-        [
-            {"intent": "press_key", "target_value": "win"},
-            {"intent": "type", "target_value": "Spotify", "press_enter": true},
-            {"intent": "sleep", "target_value": 4},
-            {"intent": "hotkey", "target_value": ["ctrl", "k"]}, 
-            {"intent": "type", "target_value": "Phonk", "press_enter": true},
-            {"intent": "sleep", "target_value": 2},
-            {"intent": "press_key", "target_value": "tab"}, 
-            {"intent": "press_key", "target_value": "enter"}
-        ]
-
+        ACTIONS (You MUST use the exact key 'intent'):
+        1. Type: {{"intent": "type", "target_value": "text", "press_enter": true}}
+        2. Press Key: {{"intent": "press_key", "target_value": "win/enter/tab"}}
+        3. Hotkey: {{"intent": "hotkey", "target_value": ["ctrl", "f"]}}
+        4. Wait: {{"intent": "wait_for_ui", "target_value": 10}}
+        5. Scroll: {{"intent": "scroll", "target_value": -500}}
+        6. Drag: {{"intent": "drag", "target_value": "100,100,500,500"}}
+        7. Click Text: {{"intent": "click_text", "target_value": "Exact Link Text"}}
+        8. Physical Scrape: {{"intent": "physical_scrape", "target_value": "What to extract"}}
+        9. Replan: {{"intent": "replan", "target_value": "What to look for on a dynamic screen"}}
+        
         RULES:
-        - NEVER return anything except a raw JSON array.
+        - Never repeat a task from PAST MISTAKES. Try a different approach.
+        - For web search: press_key(win) -> type(chrome) -> type(query) -> replan(to find link) -> physical_scrape.
+        - To type extracted data, use {{MEMORY}} in the target_value.
+        RULES:
+        - Never repeat a task from PAST MISTAKES. Try a different approach.
+        - To search INSIDE an app (like WhatsApp...): ALWAYS use hotkey ["ctrl", "f"] ; (like spotify): ALWAYS use hotkey ["ctrl", "k"]  -> type(Name) -> wait_for_ui(3) -> press_key(enter).
+        - For web search: press_key(win) -> type(chrome) -> type(query) -> wait_for_ui -> replan(to find link) -> physical_scrape.
+        - To type extracted data, use {{MEMORY}} in the target_value.
+        - When drafting messages, NEVER use markdown like asterisks (*) or hashes (#). Use simple conversational text.
+        
+        FORMAT: {{"thought_process": "Explain logic here", "tasks":[ ... ]}}
         """
 
         try:
+            response = self.client.models.generate_content(model=self.model_name, contents=[system_instructions, user_prompt])
+            plan_data = self._parse_json_response(response.text)
+            if isinstance(plan_data, list): return plan_data
+            logger.info(f"PLANNER THOUGHTS: {plan_data.get('thought_process', 'No thoughts provided')}")
+            return plan_data.get('tasks',[])
+        except Exception as e:
+            logger.error(f"Planner error: {e}")
+            return[]
+
+    def generate_sub_plan(self, sub_goal, cv_image):
+        logger.info(f"Mini-Brain analyzing screen for: {sub_goal}")
+        try:
+            rgb_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
+            pil_image = PIL.Image.fromarray(rgb_image)
+            
+            system_instructions = """
+            You are the Tactical Mini-Brain. Look at the screenshot and generate tasks.
+            AVAILABLE ACTIONS: click_text, middle_click_text, type, press_key, hotkey, scroll, wait_for_ui.
+            
+            CRITICAL FORMATTING RULES:
+            1. You MUST use the exact keys "intent" and "target_value" for every task.
+            2. NEVER use the keys "action", "task", "action_input", or "parameters". If you do, the system will crash.
+            3. CORRECT EXAMPLE: {"intent": "click_text", "target_value": "Some text"}
+            4. INCORRECT EXAMPLE: {"action": "click_text", "text": "Some text"}
+            
+            RULES FOR CLICKING:
+            1. To click a link or name, find its exact visible text and use "click_text".
+            2. If you don't see what you need, use "scroll" with -500 (down) to find it.
+            
+            FORMAT: JSON object with "thought_process" and "tasks" array.
+            """
+            
+            prompt = f"SUB-GOAL: {sub_goal}. Generate JSON tasks."
             response = self.client.models.generate_content(
                 model=self.model_name,
-                contents=[system_instructions, f"USER REQUEST: {user_prompt}"]
+                contents=[system_instructions, prompt, pil_image]
             )
             
-            raw_text = response.text.strip()
-            if raw_text.startswith("```json"):
-                raw_text = raw_text[7:-3].strip()
-            elif raw_text.startswith("```"):
-                raw_text = raw_text[3:-3].strip()
-                
-            task_chain = json.loads(raw_text)
-            logger.info(f"Successfully generated a plan with {len(task_chain)} steps.")
-            return task_chain
-            
+            plan_data = self._parse_json_response(response.text)
+            if isinstance(plan_data, list): return plan_data
+            logger.info(f"MINI-BRAIN THOUGHTS: {plan_data.get('thought_process', 'No thoughts provided')}")
+            return plan_data.get('tasks',[])
         except Exception as e:
-            logger.error(f"Failed to generate plan: {e}")
-            return None
+            logger.error(f"Mini-Brain failed: {e}")
+            return[]

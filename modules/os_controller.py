@@ -17,3 +17,15 @@ class OSController:
         except Exception as e:
             logger.error(f"OS Control Failed: {e}")
             return False
+    def focus_app(self, app_name):
+        """Forces Windows to bring an app to the front and focus it."""
+        try:
+            from pywinauto import Application
+            # Connect to the app by its name
+            app = Application(backend="uia").connect(title_re=f".*{app_name}.*", timeout=10)
+            app.top_window().set_focus()
+            logger.info(f"Successfully focused: {app_name}")
+            return True
+        except Exception as e:
+            logger.error(f"Could not focus {app_name}: {e}")
+            return False
