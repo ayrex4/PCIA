@@ -1,214 +1,47 @@
-# 🧠 PCIA – Programmable Cognitive Intelligent Agent
+<h1 align="center">PCIA - Programmable Cognitive Intelligent Agent</h1>
 
-PCIA is an **experimental agentic AI desktop automation system**.  
-Unlike traditional automation tools, PCIA behaves like a **cognitive agent** that can perceive its environment, reason about tasks, and execute complex workflows autonomously on Windows.
-
-The goal of PCIA is to overcome the brittleness of traditional scripts by combining **deterministic OS interaction** with **LLM-based reasoning and planning**.
-
----
-
-# 🧠 Architecture – The Cognitive Loop
-
-PCIA operates using a **closed-loop cognitive architecture** that mimics a simplified reasoning system.
-
-## 1️⃣ Main Brain (Gemini 2.5 / 3.1)
-
-The **Main Brain** translates natural language instructions into a structured **JSON Task Chain**.
-
-It performs **chain-of-thought reasoning** to break a complex goal into smaller tactical steps.
-
-Example workflow:
-
-```
-User Prompt → Reasoning → Task Chain → Execution
-```
+<p align="center">
+  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&duration=3000&pause=1000&color=00ff00&width=435&lines=Programmable+Cognitive+Intelligent+Agent;Autonomous+Desktop+Research+Agent;Built+with+Gemini+AI" alt="Typing Animation" />
+</p>
 
 ---
 
-## 2️⃣ Tactical Mini-Brain
+## 💡 About the Project
+**PCIA** is an autonomous desktop agent designed to bridge the gap between human intent and system execution. Unlike traditional automation, PCIA employs **Chain-of-Thought planning**, **Visual Verification**, and **Real-time System Observation** to perform complex web research and data orchestration on Windows.
 
-When the Main Brain encounters a **dynamic interface** (such as search results or unpredictable UI elements), it triggers a **Replan process**.
-
-The **Mini-Brain**:
-
-- analyzes a **live screenshot**
-- detects UI elements
-- executes precise actions like:
-  - clicking links
-  - scrolling
-  - selecting results
-
-This allows the system to adapt to **dynamic interfaces in real time**.
+## 🛠️ Tech Stack
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![OpenCV](https://img.shields.io/badge/OpenCV-5C3EE8?style=for-the-badge&logo=opencv&logoColor=white)
+![Gemini](https://img.shields.io/badge/Gemini-8E75B2?style=for-the-badge&logo=google-gemini&logoColor=white)
 
 ---
 
-## 3️⃣ Execution & Verification Layer
+## 📊 Project Progress & Insights
+*   **Phase 1-6 Complete:** The agent is now capable of full browser autonomy, OCR-based link clicking, and "Mini-Brain" recursive planning.
+*   **Activity:** You can view detailed commit history and activity graphs in the **[Insights Tab](https://github.com/aymane4/PCIA/pulse)** of this repository.
 
-PCIA interacts directly with the operating system while continuously verifying results.
-
-### Physical Scraper
-
-Uses keyboard interaction:
-
-```
-Ctrl + A
-Ctrl + C
-```
-
-to capture webpage content without relying on APIs or bypassing bot restrictions.
+## 🧠 Core Capabilities
+*   **Cognitive Planning:** Uses `gemini-3.1-flash` to generate JSON task chains.
+*   **Self-Healing:** Logs execution failures to a `learning_log.json` to avoid repeating errors.
+*   **Physical Scraping:** Uses `Ctrl+A/Ctrl+C` injection to bypass anti-bot browser measures.
+*   **Context-Aware:** Monitors system OS and hardware load to adjust execution speed dynamically.
 
 ---
 
-### Visual Wait System
+## 🌐 Connect With Me
+Feel free to reach out for collaborations or project discussions!
 
-Instead of using static delays, PCIA:
-
-- monitors **pixel stability**
-- waits for the interface to finish loading
-- executes actions only when the UI is stable
-
-This greatly improves reliability.
-
----
-
-### Self-Healing Mechanism
-
-Execution failures are automatically logged inside:
-
-```
-learning_log.json
-```
-
-These logs are injected back into the planning system so the agent can **avoid repeating the same mistakes**.
+<p align="left">
+  <a href="mailto:YOUR_EMAIL_HERE">
+    <img src="https://img.shields.io/badge/Email-0078D4?style=for-the-badge&logo=microsoft-outlook&logoColor=white" alt="Email" />
+  </a>
+  <a href="https://linkedin.com/in/aymane-aissaoui">
+    <img src="https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" />
+  </a>
+  <a href="https://discord.com/users/YOUR_DISCORD_ID">
+    <img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord" />
+  </a>
+</p>
 
 ---
-
-# 🚀 Progress Log (Phase 1 – Phase 6)
-
-## ✅ Cognitive Foundation
-
-- **System Awareness**
-
-  The agent detects:
-  - OS
-  - CPU load
-  - RAM usage
-
-  and dynamically adjusts execution speed and wait times.
-
----
-
-- **Error Recovery**
-
-  A **Learning Journal** records execution failures so the system can learn from past mistakes.
-
----
-
-- **Recursive Planning**
-
-  The system can spawn **Mini-Brain subprocesses** to solve UI problems such as:
-
-  - scrolling
-  - clicking dynamic elements
-  - navigating search results
-
----
-
-## ✅ Navigation & Data Acquisition
-
-### Universal Launch System
-
-Applications are opened using **Windows Search (`Win` key)** instead of icon templates, making launching much more reliable.
-
----
-
-### Physical Scraping
-
-Clipboard-based scraping allows PCIA to ingest data from webpages while bypassing most anti-bot restrictions.
-
----
-
-### Vision + OCR Hybrid
-
-PCIA combines:
-
-- **Vision AI** for object detection
-- **Local OCR** for pixel-precise text targeting
-
-This enables accurate UI interaction.
-
----
-
-# 🔮 Future Roadmap
-
-### 🧠 Long-Term Memory
-
-Integration of a **vector database (RAG)** so the agent can remember:
-
-- user preferences
-- previous tasks
-- context between sessions
-
----
-
-### 🎤 Voice Interface
-
-Speech-to-text integration allowing users to trigger task chains **hands-free**.
-
----
-
-### 🔁 Self-Correction Loop
-
-The agent will analyze its own crash logs and automatically:
-
-```
-Detect Error → Replan → Retry Execution
-```
-
----
-
-### 🖥️ Local Vision Models
-
-Migrating from cloud vision services to **local models** for:
-
-- improved privacy
-- lower latency
-- offline capability
-
----
-
-# 🛠️ Project Status
-
-**Status:** 🧪 Experimental / Active Development  
-
-**Current Focus:**
-
-- Recursive planning
-- Sub-goal decomposition
-- Physical UI interaction
-
----
-
-# 👤 Developer
-
-Developed and maintained by:
-
-**GitHub:**  
-[@ayrex4](https://github.com/ayrex4)
-
-**Social:**  
-@ayrex4
-
----
-
-# ⚙️ Philosophy
-
-PCIA is built on the idea that a **modular, decision-driven agent** can outperform traditional automation.
-
-Instead of rigid scripts, the system combines:
-
-- deterministic system interaction
-- reasoning from large language models
-- adaptive planning
-
-to create a **flexible cognitive automation agent**.
+<p align="center">Turning coffee into code ☕</p>
