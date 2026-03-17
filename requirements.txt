@@ -1,0 +1,12 @@
+opencv-python==4.11.0
+pytesseract==0.3.13
+pywinauto==0.6.9
+mss==10.1.0
+pyautogui==0.9.54
+google-genai==1.0.0
+numpy==2.2.0
+Pillow==11.0.0
+python-dotenv==1.2.2
+psutil==7.2.2
+pyperclip==1.11.0
+trafilatura==1.12.0
