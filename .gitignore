@@ -1,0 +1,28 @@
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignore logs and media
+*.log
+*.png
+*.jpg
+*.jpeg
+*.mp4
+*.mp3
+
+# Ignore environment variables
+.env
+
+# Ignore user data, memory, and models
+data/
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+PCIA-assistant.url
