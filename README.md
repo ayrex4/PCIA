@@ -148,7 +148,7 @@ Explore the detailed development history in the repository: 👉 **[Insights Tab
   <a href="mailto:aissaoui.aymane.24@ump.ac.ma">
     <img src="https://img.shields.io/badge/Email-0284C7?style=for-the-badge&logo=gmail&logoColor=white"/>
   </a>
-  <a href="https://linkedin.com/in/aymane-aissaoui">
+  <a href="https://www.linkedin.com/in/aymane-aissaoui-721a96442">
     <img src="https://img.shields.io/badge/LinkedIn-0369A1?style=for-the-badge&logo=linkedin&logoColor=white"/>
   </a>
   <a href="https://discord.com/users/phan_tom_7">
